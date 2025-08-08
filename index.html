@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HB Statistics • Social Blade Daily Data Collector</title>
+  <link rel="icon" href="https://yt3.ggpht.com/veDA1FfRTsN5P5U97lgW9TRP4u0FnGRQIphD1DQs5TRvoHqZHU4xizu0UxIx5GMdnvKa8mkxQzw=s192-c-k-c0x00ffffff-no-rj" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap');
+
+    /* Root & Reset */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #1f005c, #5b0060, #870160, #a00062);
+      font-family: 'Ubuntu', sans-serif;
+      color: #eee;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    a {
+      color: #ff6acc;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    a:hover {
+      color: #ff33ee;
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      background: rgba(20, 0, 60, 0.85);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 10;
+    }
+    header h1 {
+      margin: 0;
+      font-weight: 700;
+      font-size: 1.75rem;
+      letter-spacing: 1.3px;
+      user-select: none;
+    }
+
+    /* Main container */
+    main {
+      flex-grow: 1;
+      max-width: 960px;
+      margin: 2rem auto 3rem auto;
+      background: rgba(10, 0, 40, 0.9);
+      padding: 2rem 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 0 30px #a00062aa;
+    }
+
+    /* Input Section */
+    label[for="rawDataInput"] {
+      display: block;
+      font-weight: 700;
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+      color: #ff99ee;
+      user-select: none;
+    }
+    textarea#rawDataInput {
+      width: 100%;
+      height: 180px;
+      font-family: monospace;
+      font-size: 1rem;
+      background-color: #1a002f;
+      border: 2px solid #ff33ee;
+      border-radius: 12px;
+      color: #eee;
+      padding: 1rem;
+      resize: vertical;
+      transition: border-color 0.3s ease;
+      box-shadow: 0 0 15px #ff33ee55 inset;
+    }
+    textarea#rawDataInput:focus {
+      border-color: #ff66ff;
+      outline: none;
+      box-shadow: 0 0 20px #ff66ffaa inset;
+    }
+
+    /* Buttons */
+    .btn {
+      background: #ff33ee;
+      color: #fff;
+      font-weight: 700;
+      border: none;
+      border-radius: 12px;
+      padding: 0.75rem 2rem;
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin-top: 1.5rem;
+      box-shadow: 0 0 10px #ff33eeaa;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+    }
+    .btn:hover, .btn:focus {
+      background: #ff66ff;
+      box-shadow: 0 0 20px #ff66ffaa;
+      outline: none;
+    }
+    .btn-group {
+      margin-top: 1.5rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    /* Options */
+    .options {
+      margin-top: 2rem;
+      font-size: 1.1rem;
+      user-select: none;
+      color: #ffc0ff;
+    }
+    .options label {
+      cursor: pointer;
+    }
+    .options input[type="radio"] {
+      margin-right: 0.5rem;
+      cursor: pointer;
+    }
+
+    /* Preview */
+    #exData {
+      margin-top: 2rem;
+      max-height: 400px;
+      overflow-y: auto;
+      font-family: monospace;
+      background: #2d004f;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: inset 0 0 15px #ff33ee99;
+      white-space: pre-wrap;
+      color: #ffddff;
+      font-size: 0.95rem;
+    }
+
+    /* Copy Buttons */
+    #buttons {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    #buttons button {
+      background: #881166;
+      border-radius: 10px;
+      padding: 0.5rem 1.3rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #fff;
+      box-shadow: 0 0 8px #a0329a;
+      transition: background 0.25s ease;
+      cursor: pointer;
+    }
+    #buttons button:hover {
+      background: #bb44cc;
+    }
+
+    /* Export Buttons */
+    #exportButtons {
+      margin-top: 2rem;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    #exportButtons button {
+      background: #aa00aa;
+      border-radius: 12px;
+      padding: 0.75rem 1.8rem;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #ffe6ff;
+      box-shadow: 0 0 15px #d241d2cc;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    #exportButtons button:hover {
+      background: #cc33cc;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      main {
+        margin: 1rem 1rem 2rem 1rem;
+        padding: 1.5rem 1.8rem;
+      }
+      .btn, #exportButtons button, #buttons button {
+        width: 100%;
+        text-align: center;
+      }
+      #buttons, #exportButtons {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>HB Statistics • Social Blade Collector</h1>
+  </header>
+
+  <main>
+    <label for="rawDataInput">Paste Social Blade Monthly Snapshot Source:</label>
+    <textarea id="rawDataInput" placeholder="Paste the full monthly snapshot page source here..."></textarea>
+    <button class="btn" type="submit" onclick="addify()">Process Data</button>
+
+    <div id="buttons"></div>
+
+    <div class="options">
+      <label><input type="radio" name="hon-vir-data" id="hon" /> Printed data horizontally</label><br />
+      <label><input type="radio" name="hon-vir-data" id="vir" checked /> Printed data vertically</label>
+    </div>
+
+    <div id="exportButtons">
+      <button onclick="downloadCSV()">Export CSV</button>
+      <button onclick="downloadJSON()">Export JSON</button>
+    </div>
+
+    <label style="font-size: 1.8rem; color: white; margin-top: 2rem; display: block;">Preview</label>
+    <div id="exData" aria-live="polite" aria-atomic="true"></div>
+  </main>
+
+  <script>
+    function copy(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Copied to clipboard!');
+      }).catch(() => {
+        alert('Failed to copy!');
+      });
+    }
+
+    let countsArrays = {
+      c1: [],
+      c2: [],
+      c3: [],
+      c4: [],
+    };
+
+    let processedData = [];
+
+    function parseDate(str) {
+      let d = new Date(str);
+      if (!isNaN(d)) return d;
+      return null;
+    }
+
+    function formatDate(d) {
+      let y = d.getFullYear();
+      let m = (d.getMonth() + 1).toString().padStart(2, '0');
+      let day = d.getDate().toString().padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    function getDateRange(startDate, endDate) {
+      const dates = [];
+      let current = new Date(startDate);
+      while (current <= endDate) {
+        dates.push(new Date(current));
+        current.setDate(current.getDate() + 1);
+      }
+      return dates;
+    }
+
+    function fillMissingDates(data, dateKey, valueKeys) {
+      const filled = [];
+      for (let i = 0; i < data.length - 1; i++) {
+        const current = data[i];
+        const next = data[i + 1];
+
+        filled.push(current);
+
+        const currentDate = parseDate(current[dateKey]);
+        const nextDate = parseDate(next[dateKey]);
+        const diffDays = Math.round((nextDate - currentDate) / (1000 * 60 * 60 * 24));
+
+        if (diffDays > 1) {
+          const gap = diffDays - 1;
+          for (let j = 1; j <= gap; j++) {
+            const newDate = new Date(currentDate);
+            newDate.setDate(newDate.getDate() + j);
+            const interp = {};
+            interp[dateKey] = formatDate(newDate);
+
+            valueKeys.forEach(key => {
+              const v1 = Number(current[key]) || 0;
+              const v2 = Number(next[key]) || 0;
+              const valInterp = v1 + ((v2 - v1) / diffDays) * j;
+              const noise = valInterp * (Math.random() * 0.1 - 0.05);
+              interp[key] = Math.max(0, Math.round(valInterp + noise));
+            });
+            filled.push(interp);
+          }
+        }
+      }
+      filled.push(data[data.length - 1]);
+      return filled;
+    }
+
+    function addify() {
+      const rawInput = document.getElementById("rawDataInput").value.trim();
+      if (!rawInput) {
+        alert("Please paste your Social Blade monthly snapshot source code.");
+        return;
+      }
+
+      countsArrays = { c1: [], c2: [], c3: [], c4: [] };
+      processedData = [];
+
+      let acData = rawInput;
+      let newACDATA = acData.split('"').join("").split(" + ").join("").split(/\\/g);
+      for (let i = 1; i < newACDATA.length; i++) {
+        newACDATA[i] = newACDATA[i].split("n").join("");
+      }
+      newACDATA = newACDATA.join("\n");
+      acData = newACDATA;
+
+      const lines = acData.split("\n").filter(line => line.trim() !== "");
+      if (lines.length === 0) {
+        alert("No data lines found. Check your input.");
+        return;
+      }
+
+      const headers = lines[0].split(",").map(h => h.trim());
+      if (headers.length < 2) {
+        alert("At least date + 1 data column required.");
+        return;
+      }
+
+      for (let i = 1; i < lines.length; i++) {
+        const parts = lines[i].split(",");
+        if (parts.length < headers.length) continue;
+        const obj = {};
+        for (let j = 0; j < headers.length; j++) {
+          obj[headers[j]] = parts[j];
+        }
+        processedData.push(obj);
+      }
+
+      if (processedData.length === 0) {
+        alert("No valid data rows found.");
+        return;
+      }
+
+      processedData.sort((a, b) => {
+        const d1 = parseDate(a[headers[0]]);
+        const d2 = parseDate(b[headers[0]]);
+        if (d1 && d2) return d1 - d2;
+        return 0;
+      });
+
+      const valueKeys = headers.slice(1);
+      processedData = fillMissingDates(processedData, headers[0], valueKeys);
+
+      countsArrays.c1 = processedData.map(d => d[headers[0]]);
+      valueKeys.forEach((key, idx) => {
+        countsArrays["c" + (idx + 2)] = processedData.map(d => d[key]);
+      });
+
+      const exDataDiv = document.getElementById("exData");
+      const buttonsDiv = document.getElementById("buttons");
+      const isVertical = document.getElementById("vir").checked;
+
+      if (isVertical) {
+        exDataDiv.innerHTML = "";
+        for (let i = 0; i < processedData.length; i++) {
+          const row = processedData[i];
+          let line = headers.map(h => row[h]).join(",");
+          exDataDiv.innerHTML += `<span>${line}</span><br>`;
+        }
+
+        buttonsDiv.innerHTML = "";
+        for (let i = 0; i < headers.length; i++) {
+          countsArrays["c" + (i + 1)] = countsArrays["c" + (i + 1)].join("\n");
+          buttonsDiv.innerHTML += `<button onclick="copy(countsArrays.c${i + 1})">Copy "${headers[i]}"</button>`;
+        }
+      } else {
+        exDataDiv.innerHTML = "";
+        buttonsDiv.innerHTML = "";
+        for (let i = 0; i < headers.length; i++) {
+          countsArrays["c" + (i + 1)] = countsArrays["c" + (i + 1)].join("\t");
+          let D = countsArrays["c" + (i + 1)].split("\t").join(",");
+          exDataDiv.innerHTML += `<span>${headers[i]},${D}</span><br>`;
+          buttonsDiv.innerHTML += `<button onclick="copy(countsArrays.c${i + 1})">Copy "${headers[i]}"</button>`;
+        }
+      }
+    }
+
+    function downloadCSV() {
+      if (processedData.length === 0) {
+        alert("No data to export. Please process data first.");
+        return;
+      }
+      const headers = Object.keys(processedData[0]);
+      const csvRows = [];
+      csvRows.push(headers.join(","));
+      for (const row of processedData) {
+        const values = headers.map(h => row[h]);
+        csvRows.push(values.join(","));
+      }
+      const csvContent = csvRows.join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "socialblade_data.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function downloadJSON() {
+      if (processedData.length === 0) {
+        alert("No data to export. Please process data first.");
+        return;
+      }
+      const jsonContent = JSON.stringify(processedData, null, 2);
+      const blob = new Blob([jsonContent], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "socialblade_data.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+
+</body>
+</html>
